@@ -1,0 +1,135 @@
+#include "modules/TrieStock.h"
+#include "gtest/gtest.h"
+TEST(TrieTests, Test1){
+    Stocks stock_market = Stocks();
+    std::string ticker;
+    ticker = "ABCD";
+    EXPECT_TRUE(stock_market.IsEmpty());
+    stock_market.AddStock(ticker, 123.44);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 1);
+    ticker = "AB";
+    stock_market.AddStock(ticker, 56.445);
+    ticker = "FBDC";
+    stock_market.AddStock(ticker, 12);
+    ticker = "Z";
+    stock_market.AddStock(ticker, 1234);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 4);
+    TrieNode* ptr = stock_market.FindStock(ticker);
+    EXPECT_EQ(ptr->price, 1234);
+    ticker = "FBDC";
+    ptr = stock_market.FindStock(ticker);
+    EXPECT_EQ(ptr->price, 12);
+    ticker = "AB";
+    ptr = stock_market.FindStock(ticker);
+    EXPECT_NEAR(ptr->price, 56.445, 0.001);
+    EXPECT_EQ(ptr->not_nullptr, 1);
+    ticker = "ABCD";
+    ptr = stock_market.FindStock(ticker);
+    EXPECT_NEAR(ptr->price, 123.44, 0.001);
+    EXPECT_EQ(ptr->not_nullptr, 0);
+    EXPECT_FALSE(stock_market.IsEmpty());
+}
+TEST(TrieTests, Test2){
+    Stocks stock_market = Stocks();
+    std::string ticker;
+    ticker = "ABCD";
+    stock_market.AddStock(ticker, 123.44);
+    ticker = "AB";
+    stock_market.AddStock(ticker, 56.445);
+    ticker = "A";
+    stock_market.AddStock(ticker, 12);
+    ticker = "BCD";
+    stock_market.AddStock(ticker, 1234);
+    ticker = "BC";
+    stock_market.AddStock(ticker, 11);
+    ticker = "ZZZZ";
+    stock_market.AddStock(ticker, 999);
+    EXPECT_NE(stock_market.FindStock(ticker), nullptr);
+    stock_market.DeleteStock(ticker);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 5);
+    EXPECT_EQ(stock_market.FindStock(ticker), nullptr);
+    ticker = "BC";
+    EXPECT_NE(stock_market.FindStock(ticker), nullptr);
+    stock_market.DeleteStock(ticker);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 4);
+    EXPECT_EQ(stock_market.FindStock(ticker), nullptr);
+    ticker = "BCD";
+    EXPECT_NE(stock_market.FindStock(ticker), nullptr);
+    stock_market.DeleteStock(ticker);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 3);
+    EXPECT_EQ(stock_market.FindStock(ticker), nullptr);
+    ticker = "A";
+    EXPECT_NE(stock_market.FindStock(ticker), nullptr);
+    stock_market.DeleteStock(ticker);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 2);
+    EXPECT_EQ(stock_market.FindStock(ticker), nullptr);
+    ticker = "AB";
+    TrieNode* ptr = stock_market.FindStock(ticker);
+    EXPECT_EQ(ptr->not_nullptr, 1);
+    ticker = "ABCD";
+    EXPECT_NE(stock_market.FindStock(ticker), nullptr);
+    stock_market.DeleteStock(ticker);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 1);
+    EXPECT_EQ(stock_market.FindStock(ticker), nullptr);
+    EXPECT_EQ(ptr->not_nullptr, 0);
+    ticker = "AB";
+    EXPECT_NE(stock_market.FindStock(ticker), nullptr);
+    stock_market.DeleteStock(ticker);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 0);
+    EXPECT_EQ(stock_market.FindStock(ticker), nullptr);
+    EXPECT_TRUE(stock_market.IsEmpty());
+}
+
+TEST(TrieTest, Test3){
+    Stocks stock_market = Stocks();
+    std::string ticker;
+    ticker = "A";
+    stock_market.AddStock(ticker, 123.44);
+    ticker = "AB";
+    stock_market.AddStock(ticker, 56.445);
+    ticker = "ABC";
+    stock_market.AddStock(ticker, 12);
+    ticker = "B";
+    stock_market.AddStock(ticker, 1234);
+    ticker = "BC";
+    stock_market.AddStock(ticker, 11);
+    ticker = "BCD";
+    stock_market.AddStock(ticker, 11);
+    ticker = "ZZZZ";
+    stock_market.AddStock(ticker, 999);
+    ticker = "QE";
+    stock_market.AddStock(ticker, 999);
+    ticker = "FTR";
+    stock_market.AddStock(ticker, 999);
+    ticker = "F";
+    stock_market.AddStock(ticker, 999);
+    ticker = "LZ";
+    stock_market.AddStock(ticker, 999);
+
+    ticker = "A";
+    stock_market.DeleteStock(ticker);
+    ticker = "ABC";
+    stock_market.DeleteStock(ticker);
+    ticker = "AB";
+    stock_market.DeleteStock(ticker);
+    ticker = "F";
+    stock_market.DeleteStock(ticker);
+    ticker = "FTR";
+    stock_market.DeleteStock(ticker);
+    ticker = "ZZZZ";
+    stock_market.DeleteStock(ticker);
+    ticker = "BCD";
+    stock_market.DeleteStock(ticker);
+    ticker = "LZ";
+    stock_market.DeleteStock(ticker);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 3);
+    ticker = "B";
+    EXPECT_EQ(stock_market.FindStock(ticker)->not_nullptr, 1);
+    EXPECT_NE(stock_market.FindStock(ticker)->children[2], nullptr);
+    stock_market.DeleteStock(ticker);
+    EXPECT_EQ(stock_market.GetNumsStocks(), 2);
+}
+int main(int argc, char **argv){
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
